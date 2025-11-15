@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 @Component
 public class ActivitiesSrvClient {
@@ -26,10 +29,39 @@ public class ActivitiesSrvClient {
         return headers;
     }
 
-    public ResponseEntity<Object> list(String authorization) {
+    public ResponseEntity<Object> list(
+            String authorization,
+            int page,
+            int limit,
+            List<String> excessao,
+            List<String> categoria,
+            List<String> tag,
+            String categoriaTerm
+    ) {
         HttpEntity<Void> entity = new HttpEntity<>(headers(authorization));
+
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromHttpUrl(baseUrl + "/api/atividade")
+                .queryParam("page", page)
+                .queryParam("limit", limit);
+
+        if (excessao != null) {
+            excessao.forEach(e -> builder.queryParam("excessao", e));
+        }
+        if (categoria != null) {
+            categoria.forEach(c -> builder.queryParam("categoria", c));
+        }
+        if (tag != null) {
+            tag.forEach(t -> builder.queryParam("tag", t));
+        }
+        if (categoriaTerm != null && !categoriaTerm.isBlank()) {
+            builder.queryParam("categoriaTerm", categoriaTerm);
+        }
+
+        String url = builder.toUriString();
+
         return restTemplate.exchange(
-                baseUrl + "/api/atividade",
+                url,
                 HttpMethod.GET,
                 entity,
                 Object.class

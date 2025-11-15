@@ -8,6 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/atividade")
 @Tag(
@@ -26,9 +28,23 @@ public class ActivitiesBffController {
     @GetMapping
     @Operation(summary = "Lista atividades (via BFF)")
     public ResponseEntity<?> list(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
-
-        var response = client.list(authorization);
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(name = "excessao",      required = false) List<String> excessao,
+            @RequestParam(name = "categoria",     required = false) List<String> categoria,
+            @RequestParam(name = "tag",           required = false) List<String> tag,
+            @RequestParam(name = "categoriaTerm", required = false) String categoriaTerm
+    ) {
+        var response = client.list(
+                authorization,
+                page,
+                limit,
+                excessao,
+                categoria,
+                tag,
+                categoriaTerm
+        );
         return ResponseEntity
                 .status(response.getStatusCode())
                 .body(response.getBody());
