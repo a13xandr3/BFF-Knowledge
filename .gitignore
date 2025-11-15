@@ -1,0 +1,65 @@
+# === Java build artifacts ===
+target/
+**/target/
+build/
+**/build/
+bin/
+*.class
+
+# === Gradle ===
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# === Maven ===
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+# === Packages (gerados) ===
+*.jar
+*.war
+*.ear
+*.nar
+# (não ignore zip/tar.gz/rar por padrão)
+
+#variavies de ambiente
+.envrc
+
+# === Logs & dumps ===
+*.log
+logs/
+hs_err_pid*
+replay_pid*
+nohup.out
+
+# === IDEs ===
+# IntelliJ
+.idea/
+*.iml
+*.iws
+# Eclipse
+.project
+.classpath
+.settings/
+.factorypath
+# VS Code
+.vscode/
+
+# === SO ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Segurança / segredos ===
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+.env
+.env.*
+application-local.*
+*-local.yml
+*-local.properties
+
+# === Outros temporários ===
+tmp/
