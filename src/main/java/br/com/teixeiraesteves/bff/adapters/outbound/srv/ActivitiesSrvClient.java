@@ -107,4 +107,27 @@ public class ActivitiesSrvClient {
                 Void.class
         );
     }
+
+    public ResponseEntity<Object> listCategorias(
+            String authorization,
+            List<String> excessao
+    ) {
+        HttpEntity<Void> entity = new HttpEntity<>(headers(authorization));
+
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromHttpUrl(baseUrl + "/api/atividade/categorias");
+
+        if (excessao != null) {
+            excessao.forEach(e -> builder.queryParam("excessao", e));
+        }
+
+        String url = builder.toUriString();
+
+        return restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                Object.class
+        );
+    }
 }

@@ -4,8 +4,10 @@ import br.com.teixeiraesteves.bff.adapters.outbound.srv.FilesSrvClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/files")
@@ -16,6 +18,40 @@ public class FilesBffController {
 
     public FilesBffController(FilesSrvClient client) {
         this.client = client;
+    }
+
+    /**
+     * Upload de arquivo binário via BFF.
+     * Recebe exatamente o mesmo contrato do Front e repassa ao SRV.
+     */
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload de arquivo bruto (via BFF)")
+    public ResponseEntity<FilesSrvClient.FileSavedResponse> upload(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam String contentEncoding,
+            @RequestParam String hashSha256Hex,
+            @RequestParam long originalSizeBytes,
+            @RequestParam(required = false) Long gzipSizeBytes,
+            @RequestParam(required = false) String mimeType,
+            @RequestParam(required = false) String filename,
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization
+    ) throws Exception {
+
+        var response = client.upload(
+                file,
+                contentEncoding,
+                hashSha256Hex,
+                originalSizeBytes,
+                gzipSizeBytes,
+                mimeType,
+                filename,
+                authorization
+        );
+
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .headers(response.getHeaders()) // preserva Content-Type, etc.
+                .body(response.getBody());
     }
 
     @GetMapping("/{id}/raw")

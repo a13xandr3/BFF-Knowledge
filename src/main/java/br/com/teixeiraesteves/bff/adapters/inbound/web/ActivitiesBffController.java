@@ -50,6 +50,18 @@ public class ActivitiesBffController {
                 .body(response.getBody());
     }
 
+    @GetMapping("/categorias")
+    @Operation(summary = "Lista categorias (via BFF)")
+    public ResponseEntity<?> getCategorias(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @RequestParam(name = "excessao", required = false) List<String> excessao
+    ) {
+        var response = client.listCategorias(authorization, excessao);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response.getBody());
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Busca atividade por id (via BFF)")
     public ResponseEntity<?> getById(
@@ -98,4 +110,5 @@ public class ActivitiesBffController {
                 .status(response.getStatusCode())
                 .build();
     }
+
 }
