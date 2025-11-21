@@ -41,7 +41,7 @@ public class ActivitiesSrvClient {
         HttpEntity<Void> entity = new HttpEntity<>(headers(authorization));
 
         UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(baseUrl + "/api/atividade")
+                .fromHttpUrl(baseUrl + "/api/atividades")
                 .queryParam("page", page)
                 .queryParam("limit", limit);
 
@@ -71,7 +71,7 @@ public class ActivitiesSrvClient {
     public ResponseEntity<Object> getById(Long id, String authorization) {
         HttpEntity<Void> entity = new HttpEntity<>(headers(authorization));
         return restTemplate.exchange(
-                baseUrl + "/api/atividade/" + id,
+                baseUrl + "/api/atividades/" + id,
                 HttpMethod.GET,
                 entity,
                 Object.class
@@ -81,7 +81,7 @@ public class ActivitiesSrvClient {
     public ResponseEntity<Object> create(Object body, String authorization) {
         HttpEntity<Object> entity = new HttpEntity<>(body, headers(authorization));
         return restTemplate.exchange(
-                baseUrl + "/api/atividade",
+                baseUrl + "/api/atividades",
                 HttpMethod.POST,
                 entity,
                 Object.class
@@ -91,7 +91,7 @@ public class ActivitiesSrvClient {
     public ResponseEntity<Object> update(Long id, Object body, String authorization) {
         HttpEntity<Object> entity = new HttpEntity<>(body, headers(authorization));
         return restTemplate.exchange(
-                baseUrl + "/api/atividade/" + id,
+                baseUrl + "/api/atividades/" + id,
                 HttpMethod.PUT,
                 entity,
                 Object.class
@@ -101,7 +101,7 @@ public class ActivitiesSrvClient {
     public ResponseEntity<Void> delete(Long id, String authorization) {
         HttpEntity<Void> entity = new HttpEntity<>(headers(authorization));
         return restTemplate.exchange(
-                baseUrl + "/api/atividade/" + id,
+                baseUrl + "/api/atividades/" + id,
                 HttpMethod.DELETE,
                 entity,
                 Void.class
@@ -115,7 +115,30 @@ public class ActivitiesSrvClient {
         HttpEntity<Void> entity = new HttpEntity<>(headers(authorization));
 
         UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(baseUrl + "/api/atividade/categorias");
+                .fromHttpUrl(baseUrl + "/api/atividades/categorias");
+
+        if (excessao != null) {
+            excessao.forEach(e -> builder.queryParam("excessao", e));
+        }
+
+        String url = builder.toUriString();
+
+        return restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                Object.class
+        );
+    }
+
+    public ResponseEntity<Object> listTags(
+            String authorization,
+            List<String> excessao
+    ) {
+        HttpEntity<Void> entity = new HttpEntity<>(headers(authorization));
+
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromHttpUrl(baseUrl + "/api/atividades/tags");
 
         if (excessao != null) {
             excessao.forEach(e -> builder.queryParam("excessao", e));

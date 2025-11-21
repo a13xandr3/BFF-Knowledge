@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/atividade")
+@RequestMapping("/api/atividades")
 @Tag(
         name = "Atividades (BFF)",
         description = "Endpoints de atividades expostos pelo BFF e encaminhados ao SRV"
@@ -60,6 +60,16 @@ public class ActivitiesBffController {
         return ResponseEntity
                 .status(response.getStatusCode())
                 .body(response.getBody());
+    }
+
+    @Operation(summary = "Lista tags de atividades (via BFF)")
+    @GetMapping("/tags")
+    public ResponseEntity<?> tags(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @RequestParam(name = "excessao", required = false) List<String> excessao
+    ) {
+        ResponseEntity<Object> response = client.listTags(authorization, excessao);
+        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 
     @GetMapping("/{id}")
