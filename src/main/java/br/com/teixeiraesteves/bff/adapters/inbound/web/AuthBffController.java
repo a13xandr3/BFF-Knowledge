@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @Tag(
@@ -30,4 +32,12 @@ public class AuthBffController {
                 .status(response.getStatusCode())
                 .body(response.getBody());
     }
+
+    @PostMapping("/revalidate")
+    public ResponseEntity<AuthSrvClient.TokenRefreshResponse> refresh(
+            @RequestBody AuthSrvClient.TokenRefreshRequest body) {
+        var response = authSrvClient.refresh(body);
+        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+    }
+
 }
