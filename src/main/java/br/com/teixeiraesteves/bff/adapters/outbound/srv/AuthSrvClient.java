@@ -18,46 +18,75 @@ public class AuthSrvClient {
         this.baseUrl = baseUrl;
     }
 
-    public ResponseEntity<LoginResponse> login(LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(LoginRequest body) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<LoginRequest> entity = new HttpEntity<>(request, headers);
-
-        return restTemplate.exchange(
-                baseUrl + "/api/auth/login",
-                HttpMethod.POST,
-                entity,
-                LoginResponse.class
-        );
-    }
-
-    public ResponseEntity<TokenRefreshResponse> refresh(TokenRefreshRequest request) {
-        HttpHeaders h = new HttpHeaders(); h.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<LoginRequest> entity = new HttpEntity<>(body, headers);
         try {
             return restTemplate.exchange(
-                    baseUrl + "/api/auth/revalidate",
+                    baseUrl + "/api/auth/login",
                     HttpMethod.POST,
-                    new HttpEntity<>(request, h),
-                    TokenRefreshResponse.class
+                    entity,
+                    LoginResponse.class
             );
         } catch (HttpStatusCodeException ex) {
-            return ResponseEntity.status(ex.getStatusCode()).build();
+            return ResponseEntity.status(ex.getStatusCode())
+                    .headers(safeHeaders(ex))
+                    .build();
         }
     }
 
-    // DTOs alinhados ao contrato do SRV (/api/auth/login)
-    public record LoginRequest(
-            String username,
-            String password,
-            String totp
-    ) {}
+    public ResponseEntity<LoginResponse> verify2FA(TwoFactorVerifyRequest body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<TwoFactorVerifyRequest> entity = new HttpEntity<>(body, headers);
+        try {
+            return restTemplate.exchange(
+                    baseUrl + "/api/auth/2fa/verify",
+                    HttpMethod.POST,
+                    entity,
+                    LoginResponse.class
+            );
+        } catch (HttpStatusCodeException ex) {
+            return ResponseEntity.status(ex.getStatusCode())
+                    .headers(safeHeaders(ex))
+                    .build();
+        }
+    }
 
-    public record LoginResponse(
-            String status,
-            String token
-    ) {}
+    public ResponseEntity<TokenRefreshResponse> revalidate(TokenRefreshRequest body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<TokenRefreshRequest> entity = new HttpEntity<>(body, headers);
+        try {
+            return restTemplate.exchange(
+                    baseUrl + "/api/auth/revalidate", // alinhado ao SRV
+                    HttpMethod.POST,
+                    entity,
+                    TokenRefreshResponse.class
+            );
+        } catch (HttpStatusCodeException ex) {
+            return ResponseEntity.status(ex.getStatusCode())
+                    .headers(safeHeaders(ex))
+                    .build();
+        }
+    }
 
+    private static HttpHeaders safeHeaders(HttpStatusCodeException ex) {
+        HttpHeaders h = ex.getResponseHeaders();
+        return (h != null ? h : new HttpHeaders());
+    }
+
+    // ===== DTOs alinhados ao SRV =====
+    // /api/auth/login
+    public record LoginRequest(String username, String password, String totp) {}
+
+    public record LoginResponse(String status, String token) {}
+
+    // /api/auth/2fa/verify  -> { "username": "...", "code": "123456" }
+    public record TwoFactorVerifyRequest(String username, String code) {}
+
+    // /api/auth/revalidate -> { "token": "<jwt>" }
     public record TokenRefreshRequest(String token) {}
 
     public record TokenRefreshResponse(String token) {}

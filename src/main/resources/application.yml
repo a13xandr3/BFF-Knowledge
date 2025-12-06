@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: bff-knowledge
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+      resolve-lazily: true       # lança exception só ao acessar o arquivo
 
 srv:
   base-url: http://localhost:8081

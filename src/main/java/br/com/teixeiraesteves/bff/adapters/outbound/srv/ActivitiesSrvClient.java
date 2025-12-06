@@ -1,8 +1,10 @@
 package br.com.teixeiraesteves.bff.adapters.outbound.srv;
 
+import br.com.teixeiraesteves.bff.dto.DeleteCompositeRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -106,6 +108,26 @@ public class ActivitiesSrvClient {
                 entity,
                 Void.class
         );
+    }
+
+    public ResponseEntity<Void> deleteComposite(DeleteCompositeRequest body) {
+        HttpHeaders headers = headers(null);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<DeleteCompositeRequest> entity = new HttpEntity<>(body, headers);
+        try {
+            return restTemplate.exchange(
+                    baseUrl + "/api/atividades/delete",
+                    HttpMethod.POST,
+                    entity,
+                    Void.class
+            );
+        } catch (HttpStatusCodeException ex) {
+            return ResponseEntity
+                    .status(ex.getStatusCode())
+                    .headers(ex.getResponseHeaders() != null ? ex.getResponseHeaders() : new HttpHeaders())
+                    .build();
+        }
     }
 
     public ResponseEntity<Object> listCategorias(

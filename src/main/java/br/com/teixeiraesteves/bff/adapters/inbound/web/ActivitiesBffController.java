@@ -1,6 +1,7 @@
 package br.com.teixeiraesteves.bff.adapters.inbound.web;
 
 import br.com.teixeiraesteves.bff.adapters.outbound.srv.ActivitiesSrvClient;
+import br.com.teixeiraesteves.bff.dto.DeleteCompositeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -119,6 +120,29 @@ public class ActivitiesBffController {
         return ResponseEntity
                 .status(response.getStatusCode())
                 .build();
+    }
+
+    /*
+    @PostMapping("/delete")
+    @Operation(summary = "Exclui Link e File de forma atômica (via BFF → SRV)")
+    public ResponseEntity<Void> deleteComposite(@RequestBody ActivitiesSrvClient.DeleteCompositeRequest body) {
+        var response = client.deleteComposite(body);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .headers(response.getHeaders()) // preserva headers
+                .build(); // 204 sem body em sucesso
+    }
+    */
+
+    @PostMapping("/delete")
+    @Operation(summary = "Exclui Link e File de forma atômica (via BFF → SRV)")
+    public ResponseEntity<Void> delete(@RequestBody DeleteCompositeRequest body) {
+        //client.deleteComposite(body);
+        var response = client.deleteComposite(body);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .headers(response.getHeaders()) // preserva headers
+                .build(); // 204 sem body em sucesso
     }
 
 }
